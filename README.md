@@ -12,3 +12,6 @@ The vibrations are speed dependent which means stroking hairs/tails etc feels ve
 This causes all kinds of awkward issues when you try to express yourself in front of someone without looking at a mirror.
 Gesture Indicator displays on the HUD which gestures you are currently doing.
 The transparency & positions can be customizable to your likings!
+
+# _DynamicPlates_
+- DynamicPlates changes the behaviour of how nameplates work such as scaling based on distance & position based on the head instead of the hip.

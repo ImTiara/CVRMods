@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImmersiveTouch", "Immersive
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestureIndicator", "GestureIndicator\GestureIndicator.csproj", "{63FFD7AD-252D-4232-AF18-A15549E076B6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DynamicPlates", "DynamicPlates\DynamicPlates.csproj", "{2A96131D-7430-4F97-A1A9-D0B46BD4F726}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{63FFD7AD-252D-4232-AF18-A15549E076B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63FFD7AD-252D-4232-AF18-A15549E076B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63FFD7AD-252D-4232-AF18-A15549E076B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A96131D-7430-4F97-A1A9-D0B46BD4F726}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A96131D-7430-4F97-A1A9-D0B46BD4F726}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A96131D-7430-4F97-A1A9-D0B46BD4F726}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A96131D-7430-4F97-A1A9-D0B46BD4F726}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -14,4 +14,4 @@ Gesture Indicator displays on the HUD which gestures you are currently doing.
 The transparency & positions can be customizable to your likings!
 
 # _DynamicPlates_
-- DynamicPlates changes the behaviour of how nameplates work such as scaling based on distance & position based on the head instead of the hip.
+- DynamicPlates changes the nameplate behaviour such as scaling based on distance & position based on the head instead of the hip.

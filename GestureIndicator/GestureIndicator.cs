@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(GestureIndicator.GestureIndicator), "GestureIndicator", "1.0.0", "ImTiara", "https://github.com/ImTiara/CVRMods")]
+[assembly: MelonInfo(typeof(GestureIndicator.GestureIndicator), "GestureIndicator", "1.0.1", "ImTiara", "https://github.com/ImTiara/CVRMods")]
 [assembly: MelonGame("Alpha Blend Interactive", "ChilloutVR")]
 
 namespace GestureIndicator
@@ -19,6 +19,8 @@ namespace GestureIndicator
         public static MelonPreferences_Entry<float> DISTANCE;
         public static MelonPreferences_Entry<float> SIZE;
         public static MelonPreferences_Entry<float> OPACITY;
+        public static MelonPreferences_Entry<string> LEFT_COLOR;
+        public static MelonPreferences_Entry<string> RIGHT_COLOR;
 
         public static GameObject m_Root;
 
@@ -30,9 +32,6 @@ namespace GestureIndicator
 
         public static Image m_LeftImage;
         public static Image m_RightImage;
-
-        public static Color m_LeftColor = Color.white;
-        public static Color m_RightColor = Color.white;
 
         public static readonly Dictionary<float, Sprite> elements = new()
         {
@@ -61,42 +60,26 @@ namespace GestureIndicator
 
             var category = MelonPreferences.CreateCategory("GestureIndicator", "Gesture Indicator");
             ENABLE = category.CreateEntry("Enabled", true, "Enable Gesture Indicator");
-            X_POS = category.CreateEntry("XPos", 25.0f, "X Position");
-            Y_POS = category.CreateEntry("YPos", -15.0f, "Y Position");
-            DISTANCE = category.CreateEntry("Distance", 2000.0f, "Distance");
+            X_POS = category.CreateEntry("XPos", 17.0f, "X Position");
+            Y_POS = category.CreateEntry("YPos", -22.0f, "Y Position");
+            DISTANCE = category.CreateEntry("Distance", 1750.0f, "Distance");
             SIZE = category.CreateEntry("Size", 175.0f, "Size");
             OPACITY = category.CreateEntry("Opacity", 1.0f, "Opacity");
+            LEFT_COLOR = category.CreateEntry("LeftColor", "#00FFFF", "Left Color");
+            RIGHT_COLOR = category.CreateEntry("RightColor", "#00FFFF", "Right Color");
 
-            ENABLE.OnValueChanged += (editedValue, defaultValue) =>
-            {
-                ToggleIndicators(ENABLE.Value);
-            };
+            ENABLE.OnValueChanged += (editedValue, defaultValue) => ToggleIndicators(ENABLE.Value);
 
-            X_POS.OnValueChanged += (editedValue, defaultValue) =>
-            {
-                SetPosition(new Vector2(X_POS.Value, Y_POS.Value));
-            };
-
-            Y_POS.OnValueChanged += (editedValue, defaultValue) =>
-            {
-                SetPosition(new Vector2(X_POS.Value, Y_POS.Value));
-            };
-
-            DISTANCE.OnValueChanged += (editedValue, defaultValue) =>
-            {
-                SetDistance(DISTANCE.Value);
-            };
-
-            SIZE.OnValueChanged += (editedValue, defaultValue) =>
-            {
-                SetSize(SIZE.Value);
-            };
-
-            OPACITY.OnValueChanged += (editedValue, defaultValue) =>
-            {
-                SetColor(new Color(1, 1, 1, OPACITY.Value));
-            };
-
+            X_POS.OnValueChanged += (editedValue, defaultValue) => SetPosition(new Vector2(X_POS.Value, Y_POS.Value));
+            Y_POS.OnValueChanged += (editedValue, defaultValue) => SetPosition(new Vector2(X_POS.Value, Y_POS.Value));
+            
+            DISTANCE.OnValueChanged += (editedValue, defaultValue) => SetDistance(DISTANCE.Value);
+            SIZE.OnValueChanged += (editedValue, defaultValue) => SetSize(SIZE.Value);
+            
+            OPACITY.OnValueChanged += (editedValue, defaultValue) => RefreshColors();
+            LEFT_COLOR.OnValueChanged += (editedValue, defaultValue) => RefreshColors();
+            RIGHT_COLOR.OnValueChanged += (editedValue, defaultValue) => RefreshColors();
+            
             MelonCoroutines.Start(WaitForRecognizer());
         }
 
@@ -165,7 +148,8 @@ namespace GestureIndicator
                 SetPosition(new Vector2(X_POS.Value, Y_POS.Value));
                 SetDistance(DISTANCE.Value);
                 SetSize(SIZE.Value);
-                
+                RefreshColors();
+
                 MelonCoroutines.Start(CheckGesture());
             }
         }
@@ -188,9 +172,21 @@ namespace GestureIndicator
             m_RightImageRect.sizeDelta = new Vector2(size, size);
         }
 
-        public static void SetColor(Color color)
+        public static Color HexToColor(string hex)
         {
+            hex = !hex.StartsWith("#") ? "#" + hex : hex;
+            ColorUtility.TryParseHtmlString(hex, out Color c);
+            return c;
+        }
+
+        public static void RefreshColors()
+        {
+            Color color = HexToColor(LEFT_COLOR.Value);
+            color.a = OPACITY.Value;
             m_LeftImage.color = color;
+
+            color = HexToColor(RIGHT_COLOR.Value);
+            color.a = OPACITY.Value;
             m_RightImage.color = color;
         }
     }

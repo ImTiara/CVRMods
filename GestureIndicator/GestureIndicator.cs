@@ -1,4 +1,5 @@
 ﻿using ABI_RC.Core.Savior;
+using ABI_RC.Systems.InputManagement;
 using MelonLoader;
 using System;
 using System.Collections;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(GestureIndicator.GestureIndicator), "GestureIndicator", "1.0.1", "ImTiara", "https://github.com/ImTiara/CVRMods")]
+[assembly: MelonInfo(typeof(GestureIndicator.GestureIndicator), "GestureIndicator", "1.0.2", "ImTiara", "https://github.com/ImTiara/CVRMods")]
 [assembly: MelonGame("Alpha Blend Interactive", "ChilloutVR")]
 
 namespace GestureIndicator
@@ -21,6 +22,9 @@ namespace GestureIndicator
         public static MelonPreferences_Entry<float> OPACITY;
         public static MelonPreferences_Entry<string> LEFT_COLOR;
         public static MelonPreferences_Entry<string> RIGHT_COLOR;
+        public static MelonPreferences_Entry<bool> ICON_FADE;
+        public static MelonPreferences_Entry<int> FADE_TIME;
+        public static MelonPreferences_Entry<float> FADE_END_OPACITY;
 
         public static GameObject m_Root;
 
@@ -32,6 +36,15 @@ namespace GestureIndicator
 
         public static Image m_LeftImage;
         public static Image m_RightImage;
+
+        public static Color m_LeftColor;
+        public static Color m_RightColor;
+
+        public static float m_RightGesture_time = 0f;
+        public static float m_LeftGesture_time = 0f;
+
+        public static int m_RightGesture_last = 0;
+        public static int m_LeftGesture_last = 0;
 
         public static readonly Dictionary<float, Sprite> elements = new()
         {
@@ -64,9 +77,12 @@ namespace GestureIndicator
             Y_POS = category.CreateEntry("YPos", -22.0f, "Y Position");
             DISTANCE = category.CreateEntry("Distance", 1750.0f, "Distance");
             SIZE = category.CreateEntry("Size", 175.0f, "Size");
-            OPACITY = category.CreateEntry("Opacity", 1.0f, "Opacity");
             LEFT_COLOR = category.CreateEntry("LeftColor", "#00FFFF", "Left Color");
             RIGHT_COLOR = category.CreateEntry("RightColor", "#00FFFF", "Right Color");
+            OPACITY = category.CreateEntry("Opacity", 1.0f, "Opacity");
+            ICON_FADE = category.CreateEntry("Icon_Fade", true, "Fade Gesture Icons after change");
+            FADE_TIME = category.CreateEntry("Fade_Time", 5, "Fade time");
+            FADE_END_OPACITY = category.CreateEntry("Fade_End_Opacity", 0.1f, "Faded Opacity");
 
             ENABLE.OnValueChanged += (editedValue, defaultValue) => ToggleIndicators(ENABLE.Value);
 
@@ -79,7 +95,7 @@ namespace GestureIndicator
             OPACITY.OnValueChanged += (editedValue, defaultValue) => RefreshColors();
             LEFT_COLOR.OnValueChanged += (editedValue, defaultValue) => RefreshColors();
             RIGHT_COLOR.OnValueChanged += (editedValue, defaultValue) => RefreshColors();
-            
+
             MelonCoroutines.Start(WaitForRecognizer());
         }
 
@@ -89,23 +105,67 @@ namespace GestureIndicator
             {
                 try
                 {
-                    if (CVRInputManager.Instance.gestureLeft > 0.05f && CVRInputManager.Instance.gestureLeft < 1.95f)
+                    if (CVRInputManager.Instance.gestureLeft < 0f || CVRInputManager.Instance.gestureLeft > 0.05f)
                     {
-                        m_LeftImage.sprite = elements[1];
+                        if (CVRInputManager.Instance.gestureLeft > 0.05f && CVRInputManager.Instance.gestureLeft < 1.95f)
+                        {
+                            m_LeftImage.sprite = elements[1];
+
+                            if (m_LeftGesture_last != 1)
+                            {
+                                m_LeftGesture_last = 1;
+                                m_LeftGesture_time = Time.time + FADE_TIME.Value;
+                            }
+                        }
+                        else
+                        {
+                            m_LeftImage.sprite = elements[CVRInputManager.Instance.gestureLeft];
+
+                            if (m_LeftGesture_last != (int)CVRInputManager.Instance.gestureLeft)
+                            {
+                                m_LeftGesture_last = (int)CVRInputManager.Instance.gestureLeft;
+                                m_LeftGesture_time = Time.time + FADE_TIME.Value;
+                            }
+                        }
+                        SetColors();
                     }
                     else
                     {
-                        m_LeftImage.sprite = elements[CVRInputManager.Instance.gestureLeft];
+                        m_LeftImage.sprite = elements[0];
+                        m_LeftGesture_last = 0;
                     }
 
-                    if (CVRInputManager.Instance.gestureRight > 0.05f && CVRInputManager.Instance.gestureRight < 1.95f)
+
+                    if (CVRInputManager.Instance.gestureRight < 0f || CVRInputManager.Instance.gestureRight > 0.05f)
                     {
-                        m_RightImage.sprite = elements[1];
+                        if (CVRInputManager.Instance.gestureRight > 0.05f && CVRInputManager.Instance.gestureRight < 1.95f)
+                        {
+                            m_RightImage.sprite = elements[1];
+
+                            if (m_RightGesture_last != 1)
+                            {
+                                m_RightGesture_last = 1;
+                                m_RightGesture_time = Time.time + FADE_TIME.Value;
+                            }
+                        }
+                        else
+                        {
+                            m_RightImage.sprite = elements[CVRInputManager.Instance.gestureRight];
+
+                            if (m_RightGesture_last != (int)CVRInputManager.Instance.gestureRight)
+                            {
+                                m_RightGesture_last = (int)CVRInputManager.Instance.gestureRight;
+                                m_RightGesture_time = Time.time + FADE_TIME.Value;
+                            }
+                        }
+                        SetColors();
                     }
                     else
-                    {
-                        m_RightImage.sprite = elements[CVRInputManager.Instance.gestureRight];
+                    { 
+                        m_RightImage.sprite = elements[0];
+                        m_RightGesture_last = 0;
                     }
+
                 }
                 catch (Exception e) { MelonLogger.Error("Error checking gestures: " + e); }
 
@@ -127,12 +187,16 @@ namespace GestureIndicator
                 m_Root = GameObject.Instantiate(AssetLoader.template, Camera.main.transform);
                 m_Root.transform.localPosition = Vector3.zero;
                 m_Root.transform.localRotation = Quaternion.identity;
-                
+                m_Root.layer = 15;
+
                 m_LeftRootRect = m_Root.transform.Find("LeftRoot").GetComponent<RectTransform>();
                 m_RightRootRect = m_Root.transform.Find("RightRoot").GetComponent<RectTransform>();
 
                 m_LeftImage = m_LeftRootRect.GetComponentInChildren<Image>();
                 m_RightImage = m_RightRootRect.GetComponentInChildren<Image>();
+
+                m_LeftImage.material = new Material(Shader.Find("UI/Default"));
+                m_RightImage.material = new Material(Shader.Find("UI/Default"));
 
                 m_LeftImageRect = m_LeftImage.GetComponent<RectTransform>();
                 m_RightImageRect = m_RightImage.GetComponent<RectTransform>();
@@ -181,13 +245,22 @@ namespace GestureIndicator
 
         public static void RefreshColors()
         {
-            Color color = HexToColor(LEFT_COLOR.Value);
-            color.a = OPACITY.Value;
-            m_LeftImage.color = color;
+            m_LeftColor = HexToColor(LEFT_COLOR.Value);
+            m_RightColor = HexToColor(RIGHT_COLOR.Value);
+            SetColors();
+        }
 
-            color = HexToColor(RIGHT_COLOR.Value);
-            color.a = OPACITY.Value;
-            m_RightImage.color = color;
+        public static void SetColors()
+        {
+            var opacity_L = ICON_FADE.Value ? Mathf.Max( ((m_LeftGesture_time - Time.time) / FADE_TIME.Value * OPACITY.Value), FADE_END_OPACITY.Value)  : OPACITY.Value;
+            var opacity_R = ICON_FADE.Value ? Mathf.Max( ((m_RightGesture_time - Time.time) / FADE_TIME.Value * OPACITY.Value), FADE_END_OPACITY.Value) : OPACITY.Value;
+
+            m_LeftColor.a = opacity_L;
+            m_LeftImage.color = m_LeftColor;
+
+            m_RightColor.a = opacity_R;
+            m_RightImage.color = m_RightColor;
+            //MelonLogger.Msg($"opacity_L:{opacity_L}, opacity_R:{opacity_R}");
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(GestureIndicator.GestureIndicator), "GestureIndicator", "1.0.2", "ImTiara", "https://github.com/ImTiara/CVRMods")]
+[assembly: MelonInfo(typeof(GestureIndicator.GestureIndicator), "GestureIndicator", "1.0.3", "ImTiara", "https://github.com/ImTiara/CVRMods")]
 [assembly: MelonGame("Alpha Blend Interactive", "ChilloutVR")]
 
 namespace GestureIndicator
@@ -195,8 +195,8 @@ namespace GestureIndicator
                 m_LeftImage = m_LeftRootRect.GetComponentInChildren<Image>();
                 m_RightImage = m_RightRootRect.GetComponentInChildren<Image>();
 
-                m_LeftImage.material = new Material(Shader.Find("UI/Default"));
-                m_RightImage.material = new Material(Shader.Find("UI/Default"));
+                m_LeftImage.material = new Material(AssetLoader.gestureShader);
+                m_RightImage.material = new Material(AssetLoader.gestureShader);
 
                 m_LeftImageRect = m_LeftImage.GetComponent<RectTransform>();
                 m_RightImageRect = m_RightImage.GetComponent<RectTransform>();

@@ -58,6 +58,8 @@ namespace GestureIndicator
             { 6, null },
         };
 
+        private static bool init = false;
+
         public override void OnApplicationStart()
         {
             AssetLoader.Load();
@@ -95,8 +97,6 @@ namespace GestureIndicator
             OPACITY.OnValueChanged += (editedValue, defaultValue) => RefreshColors();
             LEFT_COLOR.OnValueChanged += (editedValue, defaultValue) => RefreshColors();
             RIGHT_COLOR.OnValueChanged += (editedValue, defaultValue) => RefreshColors();
-
-            MelonCoroutines.Start(WaitForRecognizer());
         }
 
         public static IEnumerator CheckGesture()
@@ -173,11 +173,21 @@ namespace GestureIndicator
             }
         }
 
-        public static IEnumerator WaitForRecognizer()
+        public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
-            while (CVRGestureRecognizer.Instance == null) yield return null;
-
-            ToggleIndicators(ENABLE.Value);
+            switch (buildIndex)
+            {
+                case 0: break;
+                case 1: break;
+                case 2: break;
+                default:
+                    if (!init)
+                    {
+                        init = true;
+                        ToggleIndicators(ENABLE.Value);
+                    }
+                    break;
+            }
         }
 
         public static void ToggleIndicators(bool enable)

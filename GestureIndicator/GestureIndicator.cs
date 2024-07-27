@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(GestureIndicator.GestureIndicator), "GestureIndicator", "1.0.3", "ImTiara", "https://github.com/ImTiara/CVRMods")]
+[assembly: MelonInfo(typeof(GestureIndicator.GestureIndicator), "GestureIndicator", "1.0.4", "ImTiara", "https://github.com/ImTiara/CVRMods")]
 [assembly: MelonGame("Alpha Blend Interactive", "ChilloutVR")]
 
 namespace GestureIndicator

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(GestureIndicator.GestureIndicator), "GestureIndicator", "1.0.4", "ImTiara", "https://github.com/ImTiara/CVRMods")]
+[assembly: MelonInfo(typeof(GestureIndicator.GestureIndicator), "GestureIndicator", "1.0.5", "ImTiara", "https://github.com/ImTiara/CVRMods")]
 [assembly: MelonGame(null, "ChilloutVR")]
 
 namespace GestureIndicator
@@ -85,18 +85,18 @@ namespace GestureIndicator
             ICON_FADE = category.CreateEntry("Icon_Fade", true, "Fade Gesture Icons after change");
             FADE_TIME = category.CreateEntry("Fade_Time", 5, "Fade time");
             FADE_END_OPACITY = category.CreateEntry("Fade_End_Opacity", 0.1f, "Faded Opacity");
-
-            ENABLE.OnValueChanged += (editedValue, defaultValue) => ToggleIndicators(ENABLE.Value);
-
-            X_POS.OnValueChanged += (editedValue, defaultValue) => SetPosition(new Vector2(X_POS.Value, Y_POS.Value));
-            Y_POS.OnValueChanged += (editedValue, defaultValue) => SetPosition(new Vector2(X_POS.Value, Y_POS.Value));
             
-            DISTANCE.OnValueChanged += (editedValue, defaultValue) => SetDistance(DISTANCE.Value);
-            SIZE.OnValueChanged += (editedValue, defaultValue) => SetSize(SIZE.Value);
+            ENABLE.OnEntryValueChangedUntyped.Subscribe((editedValue, defaultValue) => { ToggleIndicators(ENABLE.Value); });
+
+            X_POS.OnEntryValueChangedUntyped.Subscribe((editedValue, defaultValue) => { SetPosition(new Vector2(X_POS.Value, Y_POS.Value)); });
+            Y_POS.OnEntryValueChangedUntyped.Subscribe((editedValue, defaultValue) => { SetPosition(new Vector2(X_POS.Value, Y_POS.Value)); });
             
-            OPACITY.OnValueChanged += (editedValue, defaultValue) => RefreshColors();
-            LEFT_COLOR.OnValueChanged += (editedValue, defaultValue) => RefreshColors();
-            RIGHT_COLOR.OnValueChanged += (editedValue, defaultValue) => RefreshColors();
+            DISTANCE.OnEntryValueChangedUntyped.Subscribe((editedValue, defaultValue) => { SetDistance(DISTANCE.Value); });
+            SIZE.OnEntryValueChangedUntyped.Subscribe((editedValue, defaultValue) => { SetSize(SIZE.Value); });
+            
+            OPACITY.OnEntryValueChangedUntyped.Subscribe((editedValue, defaultValue) => { RefreshColors(); });
+            LEFT_COLOR.OnEntryValueChangedUntyped.Subscribe((editedValue, defaultValue) => { RefreshColors(); });
+            RIGHT_COLOR.OnEntryValueChangedUntyped.Subscribe((editedValue, defaultValue) => { RefreshColors(); });
         }
 
         public static IEnumerator CheckGesture()

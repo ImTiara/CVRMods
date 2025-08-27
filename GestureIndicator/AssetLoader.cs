@@ -8,26 +8,38 @@ namespace GestureIndicator
     {
         public static Sprite openHand, _null, fist, thumbsUp, fingerGun, point, victory, rockAndRoll;
         public static GameObject template;
+        public static Shader gestureShader;
 
         public static void Load()
         {
-            using var assetStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("GestureIndicator.Assets.gestureindicator");
-            using var tempStream = new MemoryStream((int)assetStream.Length);
-            assetStream.CopyTo(tempStream);
+            {
+                using var assetStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("GestureIndicator.Assets.gestureindicator");
+                using var tempStream = new MemoryStream((int)assetStream.Length);
+                assetStream.CopyTo(tempStream);
 
-            AssetBundle assetBundle = AssetBundle.LoadFromMemory(tempStream.ToArray());
+                AssetBundle assetBundle = AssetBundle.LoadFromMemory(tempStream.ToArray());
+            
+                openHand = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/openhand.png"));
+                _null = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/null.png"));
+                fist = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/fist.png"));
+                thumbsUp = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/thumbsup.png"));
+                fingerGun = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/fingergun.png"));
+                point = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/point.png"));
+                victory = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/victory.png"));
+                rockAndRoll = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/rockandroll.png"));
 
-            openHand = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/openhand.png"));
-            _null = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/null.png"));
-            fist = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/fist.png"));
-            thumbsUp = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/thumbsup.png"));
-            fingerGun = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/fingergun.png"));
-            point = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/point.png"));
-            victory = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/victory.png"));
-            rockAndRoll = ToSprite(assetBundle.LoadAsset("assets/mods/gestureindicator/textures/rockandroll.png"));
+                template = (GameObject)assetBundle.LoadAsset("assets/mods/gestureindicator/gestureindicator.prefab");
+                template.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+            }
 
-            template = (GameObject)assetBundle.LoadAsset("assets/mods/gestureindicator/gestureindicator.prefab");
-            template.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+            {
+                using var assetStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("GestureIndicator.Assets.gestureshader");
+                using var tempStream = new MemoryStream((int)assetStream.Length);
+                assetStream.CopyTo(tempStream);
+                AssetBundle assetBundle = AssetBundle.LoadFromMemory(tempStream.ToArray());
+                gestureShader = (Shader)assetBundle.LoadAsset("UI-Default-Over.shader");
+                gestureShader.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+            }
         }
 
         private static Sprite ToSprite(Object obj)
